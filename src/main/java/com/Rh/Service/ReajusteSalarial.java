@@ -1,18 +1,22 @@
 package com.Rh.Service;
 
-import com.Rh.exception.ValidarException;
+import com.Rh.Funcionario.Funcionario;
+import com.Rh.Validacoes.Validacoes;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
+import java.util.List;
 
 public class ReajusteSalarial {
+    private List<Validacoes> validacoes;
+
+    public ReajusteSalarial(List<Validacoes> validacoes) {
+        this.validacoes = validacoes;
+    }
+
     public void reajustarSalario (Funcionario funcionario, BigDecimal aumento) {
-        BigDecimal salarioAtual = funcionario.getSalario();
-        BigDecimal percentualReajuste = aumento.divide(salarioAtual, RoundingMode.HALF_UP);
-        if (percentualReajuste.compareTo( new BigDecimal("0.4")) > 0) {
-            throw new ValidarException("Aumento excedeu o valor de 40% do salario atual em questão");
-        }
-        BigDecimal salarioReajustado = salarioAtual.add(aumento);
+        this.validacoes.forEach(v -> v.validar(funcionario, aumento));
+        BigDecimal salarioReajustado = funcionario.getDadosPessoais().getSalario().add(aumento);
         funcionario.atualizarSalario(salarioReajustado);
+
     }
 }
